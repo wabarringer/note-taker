@@ -50,10 +50,41 @@ app.post("/api/notes", (req, res) => {
         JSON.stringify(notesData, null, 4),
         (err) => {
           if (err) {
-            res.status(500).send("oh no!");
+            res.status(500).send("Server error");
             throw err;
           } else {
             res.json(req.body);
+          }
+        }
+      );
+    }
+  });
+});
+
+// TODO: `DELETE /api/notes/:id` should receive a query parameter that contains the id of a note to delete. To delete a note, you'll need to read all notes from the `db.json` file, remove the note with the given `id` property, and then rewrite the notes to the `db.json` file.
+app.delete("/api/notes/:id", (req, res) => {
+  fs.readFile("./db/db.json", "utf-8", (err, data) => {
+    if (err) {
+      res.status(500).send("Server error");
+      throw err;
+    } else {
+      let notesData = JSON.parse(data);
+      notesData = notesData.filter((note) => {
+        if (note.id == req.params.id) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+      fs.writeFile(
+        "./db/db.json",
+        JSON.stringify(notesData, null, 4),
+        (err) => {
+          if (err) {
+            res.status(500).send("Server error");
+            throw err;
+          } else {
+            res.send("Note deleted");
           }
         }
       );
